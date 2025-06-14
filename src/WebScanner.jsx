@@ -22,10 +22,16 @@ export default function WebScanner({ onDetected, onError }) {
       }
     });
 
+    // ―― Debounce: require seeing the same code 3 times before firing ――
+    const counts = {};
     Quagga.onDetected(result => {
       const code = result.codeResult.code;
-      Quagga.stop();
-      onDetected(code);
+      counts[code] = (counts[code] || 0) + 1;
+      if (counts[code] >= 3) {
+        Quagga.offDetected();
+        Quagga.stop();
+        onDetected(code);
+      }
     });
 
     return () => {
@@ -40,8 +46,8 @@ export default function WebScanner({ onDetected, onError }) {
       style={{
         width: 640,
         height: 480,
-        margin: '2rem auto',
-        border: '2px solid #333'
+        margin: '0 auto',
+        border: '2px solid rgba(255,255,255,0.3)'
       }}
     />
   );
