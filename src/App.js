@@ -1,27 +1,40 @@
-import React, { useState, useEffect } from 'react';
+// src/App.js
+import React, { useState, useEffect, useRef } from 'react';
 import WebScanner from './WebScanner';
 import ManualEntryForm from './ManualEntryForm';
 import './App.css';
 
-const CUSTOM_KEY = 'onemore-custom';
+const CUSTOM_KEY    = 'onemore-custom';
+const LOG_KEY       = 'onemore-logs';
+const REMINDERS_KEY = 'onemore-reminders';
+
+// helper to compute ms until next hh:mm
+function msUntil(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  const now = new Date();
+  const target = new Date(now);
+  target.setHours(h, m, 0, 0);
+  if (target <= now) target.setDate(target.getDate() + 1);
+  return target - now;
+}
 
 export default function App() {
-  // Scanner + info + error + manual-flag
+  // scanner state
   const [barcode,     setBarcode]    = useState(null);
   const [info,        setInfo]       = useState(null);
   const [error,       setError]      = useState(null);
   const [needsManual, setNeedsManual]= useState(false);
 
-  // Logs
+  // logs
   const [logs, setLogs] = useState(() => {
-    const s = localStorage.getItem('onemore-logs');
+    const s = localStorage.getItem(LOG_KEY);
     return s ? JSON.parse(s) : [];
   });
   useEffect(() => {
-    localStorage.setItem('onemore-logs', JSON.stringify(logs));
+    localStorage.setItem(LOG_KEY, JSON.stringify(logs));
   }, [logs]);
 
-  // Custom items
+  // custom items
   const [customItems, setCustomItems] = useState(() => {
     const s = localStorage.getItem(CUSTOM_KEY);
     return s ? JSON.parse(s) : {};
@@ -30,71 +43,78 @@ export default function App() {
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(customItems));
   }, [customItems]);
 
-  // Handle scan detection
-  const handleDetected = async code => {
-    setBarcode(code);
-    setError(null);
-    setInfo(null);
-    setNeedsManual(false);
+  // meal reminders times
+  const [reminders, setReminders] = useState(() => {
+    const s = localStorage.getItem(REMINDERS_KEY);
+    return s
+      ? JSON.parse(s)
+      : { breakfast: '08:00', lunch: '12:00', dinner: '18:00' };
+  });
 
-    // 1) custom?
-    if (customItems[code]) {
-      setInfo(customItems[code]);
-      return;
+  // store timers so we can clear on change
+  const timersRef = useRef([]);
+
+  // schedule notifications
+  const scheduleReminders = () => {
+    // clear old
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+
+    Object.entries(reminders).forEach(([meal, timeStr]) => {
+      const ms = msUntil(timeStr);
+      // schedule first fire
+      const id = setTimeout(function tick() {
+        new Notification(`🍽 Time for ${meal}!`);
+        // schedule next day
+        timersRef.current.push(setTimeout(tick, 24 * 60 * 60 * 1000));
+      }, ms);
+      timersRef.current.push(id);
+    });
+  };
+
+  // on mount: request permission & schedule
+  useEffect(() => {
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission();
     }
+    scheduleReminders();
+    // clear on unmount
+    return () => timersRef.current.forEach(clearTimeout);
+  }, []);
 
-    // 2) OFF lookup
-    try {
-      const res  = await fetch(
-        `https://world.openfoodfacts.org/api/v0/product/${code}.json`
-      );
-      const json = await res.json();
-      if (json.status === 1 && json.product) {
-        const n  = json.product.product_name || 'Unknown';
-        const nut= json.product.nutriments || {};
-        setInfo({
-          name:    n,
-          kcal:    nut['energy-kcal_serving'] ?? nut['energy-kcal_100g'] ?? 0,
-          protein: nut['proteins_100g']     ?? 0,
-          carbs:   nut['carbohydrates_100g']?? 0,
-          fat:     nut['fat_100g']          ?? 0,
-        });
-      } else {
-        setNeedsManual(true);
-      }
-    } catch {
-      setError('Network error');
-      setNeedsManual(true);
-    }
-  };
+  // re-schedule when reminder times change
+  useEffect(() => {
+    localStorage.setItem(REMINDERS_KEY, JSON.stringify(reminders));
+    scheduleReminders();
+  }, [reminders]);
 
-  // Save custom definition
-  const handleSaveCustom = (code, obj) => {
-    setCustomItems({ ...customItems, [code]: obj });
-    setInfo(obj);
-    setNeedsManual(false);
-  };
-
-  // Add to log
-  const addToLog = () => {
-    if (!info || !barcode) return;
-    const entry = {
-      time:  new Date().toLocaleTimeString(),
-      code:  barcode,
-      ...info
-    };
-    setLogs([entry, ...logs]);
-    setBarcode(null);
-    setInfo(null);
-  };
-
-  // Total calories
-  const totalCalories = logs.reduce((s, e) => s + e.kcal, 0);
+  // … your handleDetected, handleSaveCustom, addToLog, totalCalories here …
+  // (same as before, omitted for brevity)
+  // For full code see previous message.
 
   return (
     <div className="container">
       <h1>OneMore Web Scanner</h1>
 
+      {/* ── Settings: Meal Reminders ── */}
+      <section style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+        <h2>Meal Reminders</h2>
+        {['breakfast','lunch','dinner'].map(meal => (
+          <label key={meal} style={{ margin: '0 1rem' }}>
+            {meal.charAt(0).toUpperCase()+meal.slice(1)}:
+            <input
+              type="time"
+              value={reminders[meal]}
+              onChange={e =>
+                setReminders({...reminders, [meal]: e.target.value})
+              }
+              style={{ marginLeft: '0.5rem', padding: '0.2rem' }}
+            />
+          </label>
+        ))}
+      </section>
+
+      {/* ── Scanner / Manual / Result ── */}
       <div className="scanner">
         {!barcode ? (
           <WebScanner
@@ -142,36 +162,27 @@ export default function App() {
 
       <hr/>
 
+      {/* ── Today's Log ── */}
       <h2>Today's Log</h2>
-      <p><strong>Total: {totalCalories} kcal</strong></p>
-
-      {logs.length === 0 ? (
+      <p><strong>Total: {logs.reduce((s,e)=>s+e.kcal,0)} kcal</strong></p>
+      {logs.length===0 ? (
         <p>No items logged yet.</p>
       ) : (
         <table>
           <thead>
             <tr>
-              <th>Time</th>
-              <th>Name</th>
-              <th>Kcal</th>
-              <th>Protein</th>
-              <th>Carbs</th>
-              <th>Fat</th>
-              <th></th>
+              <th>Time</th><th>Name</th><th>Kcal</th>
+              <th>P</th><th>C</th><th>F</th><th></th>
             </tr>
           </thead>
           <tbody>
-            {logs.map((e,i) => (
+            {logs.map((e,i)=>(
               <tr key={i}>
-                <td>{e.time}</td>
-                <td>{e.name}</td>
-                <td>{e.kcal}</td>
-                <td>{e.protein}</td>
-                <td>{e.carbs}</td>
-                <td>{e.fat}</td>
+                <td>{e.time}</td><td>{e.name}</td><td>{e.kcal}</td>
+                <td>{e.protein}</td><td>{e.carbs}</td><td>{e.fat}</td>
                 <td>
-                  <button onClick={() =>
-                    setLogs(logs.filter((_,idx) => idx!==i))
+                  <button onClick={()=>
+                    setLogs(logs.filter((_,idx)=>idx!==i))
                   }>❌</button>
                 </td>
               </tr>
