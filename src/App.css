@@ -1,38 +1,95 @@
-.App {
+:root {
+  --beige:    #E3DCD2;
+  --tan:      #CC8B65;
+  --green:    #013328;
+  --dark:     #100C0D;
+  --glass-bg: rgba(255, 255, 255, 0.2);
+  --glass-br: rgba(255, 255, 255, 0.3);
+}
+
+/* Global reset + background */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--dark);
+  color: var(--beige);
+}
+
+/* Container with glass effect */
+.container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-br);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  animation: fadeIn 0.8s ease-out both;
+}
+
+/* Headers */
+h1, h2 {
   text-align: center;
+  margin: 0.5rem 0 1rem;
+  color: var(--beige);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Scanner wrapper */
+.scanner {
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-br);
+  margin-bottom: 2rem;
+  animation: fadeIn 0.8s ease-out both;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Buttons */
+button {
+  background: var(--tan);
+  color: var(--dark);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+button:hover {
+  transform: translateY(-2px);
+  background: var(--green);
+  color: var(--beige);
 }
 
-.App-link {
-  color: #61dafb;
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  animation: fadeIn 0.8s ease-out both;
+}
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-br);
+}
+th {
+  color: var(--tan);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Error text */
+.error {
+  color: #e74c3c;
+  margin: 0.5rem 0;
+}
+
+/* Fade-in keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

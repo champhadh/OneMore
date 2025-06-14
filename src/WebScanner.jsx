@@ -15,6 +15,7 @@ export default function WebScanner({ onDetected, onError }) {
       decoder: { readers: ['ean_reader','upc_reader','code_128_reader'] },
     }, err => {
       if (err) {
+        console.error(err);
         onError(err);
       } else {
         Quagga.start();
@@ -31,7 +32,7 @@ export default function WebScanner({ onDetected, onError }) {
       Quagga.offDetected();
       Quagga.stop();
     };
-  }, []);
+  }, [onDetected, onError]);
 
   return (
     <div
