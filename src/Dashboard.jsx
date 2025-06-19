@@ -1,40 +1,31 @@
-// src/Dashboard.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import WebScanner from './WebScanner';
-import ManualEntryForm from './ManualEntryForm';
-import GoalsForm from './GoalsForm';
-import CalendarNav from './CalendarNav';
-import Favorites from './Favorites';
-import MealsSection from './MealsSection';
-import HealthSection from './HealthSection';
-import SettingsModal from './SettingsModal';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import WebScanner from "./WebScanner";
+import ManualEntryForm from "./ManualEntryForm";
+import GoalsForm from "./GoalsForm";
+import CalendarNav from "./CalendarNav";
+import Favorites from "./Favorites";
+import MealsSection from "./MealsSection";
+import HealthSection from "./HealthSection";
+import SettingsModal from "./SettingsModal";
+import "./Dashboard.css";
 
 export default function Dashboard({ currentUser, onLogout }) {
-  // Storage keys
-  const LOG_KEY    = `onemore-logs-${currentUser}`;
-  const CUSTOM_KEY = `onemore-custom-${currentUser}`;
-  const REM_KEY    = `onemore-reminders-${currentUser}`;
-  const GOALS_KEY  = `onemore-goals-${currentUser}`;
+  // —–––––––––––– State & Storage Keys –––––––––––—
+  const LOG_KEY   = `onemore-logs-${currentUser}`;
+  const GOALS_KEY = `onemore-goals-${currentUser}`;
 
-  // ─── Settings Modal ─────────────────────────────────────────────────
-  const [showSettings, setShowSettings] = useState(false);
-
-  // ─── Date Navigator ─────────────────────────────────────────────────
-  const [date, setDate] = useState(new Date());
-
-  // ─── Daily Goals ────────────────────────────────────────────────────
+  // daily goals
   const [goals, setGoals] = useState(() => {
     const saved = localStorage.getItem(GOALS_KEY);
     return saved
       ? JSON.parse(saved)
-      : { kcal: 2000, protein: 75, carbs: 250, fat: 70 };
+      : { kcal: 2000, protein: 75, carbs: 250, fat: 70, water: 2000, steps: 10000 };
   });
   useEffect(() => {
     localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
   }, [goals]);
 
-  // ─── Logs ───────────────────────────────────────────────────────────
+  // logs
   const [logs, setLogs] = useState(() => {
     const s = localStorage.getItem(LOG_KEY);
     return s ? JSON.parse(s) : [];
@@ -43,149 +34,73 @@ export default function Dashboard({ currentUser, onLogout }) {
     localStorage.setItem(LOG_KEY, JSON.stringify(logs));
   }, [logs]);
 
-  // ─── Custom Items ──────────────────────────────────────────────────
-  const [customItems, setCustomItems] = useState(() => {
-    const s = localStorage.getItem(CUSTOM_KEY);
-    return s ? JSON.parse(s) : {};
-  });
-  useEffect(() => {
-    localStorage.setItem(CUSTOM_KEY, JSON.stringify(customItems));
-  }, [customItems]);
+  // for manual‐entry form
+  const [manualMeal, setManualMeal] = useState(null);
 
-  // ─── Meal Reminders ─────────────────────────────────────────────────
-  const [reminders, setReminders] = useState(() => {
-    const s = localStorage.getItem(REM_KEY);
-    return s
-      ? JSON.parse(s)
-      : { breakfast: '08:00', lunch: '12:00', dinner: '18:00' };
-  });
-  useEffect(() => {
-    localStorage.setItem(REM_KEY, JSON.stringify(reminders));
-  }, [reminders]);
+  // settings modal
+  const [showSettings, setShowSettings] = useState(false);
 
-  const timersRef = useRef([]);
-  function msUntil(timeStr) {
-    const [h, m] = timeStr.split(':').map(Number);
-    const now = new Date();
-    const t = new Date(now);
-    t.setHours(h, m, 0, 0);
-    if (t <= now) t.setDate(t.getDate() + 1);
-    return t - now;
-  }
-  useEffect(() => {
-    if (Notification.permission !== 'granted') {
-      Notification.requestPermission();
-    }
-  }, []);
-  useEffect(() => {
-    timersRef.current.forEach(clearTimeout);
-    timersRef.current = [];
-    Object.entries(reminders).forEach(([meal, time]) => {
-      const id = setTimeout(function tick() {
-        new Notification(`🍽 Time for ${meal}!`);
-        timersRef.current.push(setTimeout(tick, 24 * 60 * 60 * 1000));
-      }, msUntil(time));
-      timersRef.current.push(id);
-    });
-    return () => timersRef.current.forEach(clearTimeout);
-  }, [reminders]);
-
-  // ─── Barcode Scanner ────────────────────────────────────────────────
-  const [barcode, setBarcode] = useState(null);
-  const [info, setInfo] = useState(null);
-  const [error, setError] = useState(null);
-  const [needsManual, setNeedsManual] = useState(false);
-
-  const handleDetected = async code => {
-    setBarcode(code);
-    setError(null);
-    setInfo(null);
-    setNeedsManual(false);
-
-    // 1) custom override
-    if (customItems[code]) {
-      setInfo(customItems[code]);
-      return;
-    }
-    // 2) fetch from OpenFoodFacts
-    try {
-      const res = await fetch(
-        `https://world.openfoodfacts.org/api/v0/product/${code}.json`
-      );
-      const json = await res.json();
-      if (json.status === 1 && json.product) {
-        const p = json.product.product_name || 'Unknown';
-        const n = json.product.nutriments || {};
-        setInfo({
-          name:    p,
-          kcal:    n['energy-kcal_serving'] ?? n['energy-kcal_100g'] ?? 0,
-          protein: n['proteins_100g']     ?? 0,
-          carbs:   n['carbohydrates_100g']?? 0,
-          fat:     n['fat_100g']          ?? 0,
-        });
-      } else {
-        setNeedsManual(true);
-      }
-    } catch {
-      setError('Network error');
-      setNeedsManual(true);
-    }
-  };
-
-  const handleSaveCustom = (code, obj) => {
-    setCustomItems({ ...customItems, [code]: obj });
-    setInfo(obj);
-    setNeedsManual(false);
-  };
-
-  // ─── Logging ────────────────────────────────────────────────────────
-  const addToLog = () => {
-    if (!info) return;
-    const entry = {
-      time:    new Date().toLocaleTimeString(),
-      name:    info.name,
-      kcal:    info.kcal,
-      protein: info.protein,
-      carbs:   info.carbs,
-      fat:     info.fat,
-    };
-    setLogs([entry, ...logs]);
-    setBarcode(null);
-    setInfo(null);
-  };
-
-  // ─── Aggregations ──────────────────────────────────────────────────
+  // aggregate totals
   const totals = logs.reduce(
-    (sum, e) => ({
-      kcal: sum.kcal + e.kcal,
-      protein: sum.protein + e.protein,
-      carbs: sum.carbs + e.carbs,
-      fat: sum.fat + e.fat,
+    (acc, e) => ({
+      kcal: acc.kcal + e.kcal,
+      protein: acc.protein + e.protein,
+      carbs: acc.carbs + e.carbs,
+      fat: acc.fat + e.fat,
     }),
     { kcal: 0, protein: 0, carbs: 0, fat: 0 }
   );
 
-  const meals = {
-    breakfast: logs.slice(0,3),
-    lunch:     logs.slice(3,6),
-    dinner:    logs.slice(6,9),
-    snacks:    logs.slice(9),
+  const mealBuckets = {
+    breakfast: logs.slice(0, 3),
+    lunch: logs.slice(3, 6),
+    dinner: logs.slice(6, 9),
+    snacks: logs.slice(9),
   };
 
-  // ─── Render ─────────────────────────────────────────────────────────
+  // ─── Health data ───────────────────────────────────────────────────
+  const [healthData, setHealthData] = useState({
+    water: null,
+    bodyFat: null,
+    steps: null,
+    sleep: null,
+    glucose: null,
+    bp: null,
+  });
+
+  const handleRecordHealth = key => {
+    const val = prompt(`Enter your ${key} for today:`);
+    if (val !== null && !isNaN(Number(val))) {
+      setHealthData(h => ({ ...h, [key]: Number(val) }));
+    }
+  };
+  const handleClearHealth = key => {
+    setHealthData(h => ({ ...h, [key]: null }));
+  };
+
+  // ─── Manual Entry Save ─────────────────────────────────────────────
+  const handleSaveManual = ({ mealType, calories, protein, carbs, fat }) => {
+    const entry = {
+      time: new Date().toLocaleTimeString(),
+      name: mealType.charAt(0).toUpperCase() + mealType.slice(1),
+      kcal: calories,
+      protein,
+      carbs,
+      fat,
+    };
+    setLogs([entry, ...logs]);
+    setManualMeal(null);
+  };
+
   return (
-    <div className="container">
+    <div className="dashboard">
       <header className="app-header">
         <h1>OneMore</h1>
         <div>
-          <button
-            className="settings-btn"
-            onClick={() => setShowSettings(true)}
-            title="Settings"
-          >3
+          <button className="header-btn" onClick={() => setShowSettings(true)}>
             ⚙️
           </button>
-          <button className="logout" onClick={onLogout}>
+          <button className="header-btn" onClick={onLogout}>
             Logout
           </button>
         </div>
@@ -193,89 +108,64 @@ export default function Dashboard({ currentUser, onLogout }) {
 
       <SettingsModal
         isOpen={showSettings}
-        initialTarget={goals.kcal}
-        onSave={newKcal => setGoals(g => ({ ...g, kcal: newKcal }))}
+        initialGoals={goals}
+        onSave={setGoals}
         onClose={() => setShowSettings(false)}
       />
 
-      <CalendarNav
-        date={date}
-        onPrev={()  => setDate(d => { const dd = new Date(d); dd.setDate(dd.getDate()-1); return dd; })}
-        onNext={()  => setDate(d => { const dd = new Date(d); dd.setDate(dd.getDate()+1); return dd; })}
-        onPickWeek={d => setDate(d)}
-      />
+      <CalendarNav /* … */ />
 
       <GoalsForm initialGoals={goals} onSave={setGoals} />
 
       <div className="progress-bars">
-        {['kcal','protein','carbs','fat'].map(field => {
-          const done   = totals[field];
-          const target = goals[field];
-          const pct    = Math.min(100, Math.round((done/target)*100));
+        {["kcal", "protein", "carbs", "fat"].map(f => {
+          const done = totals[f], tgt = goals[f];
+          const pct = Math.min(100, Math.round((done / tgt) * 100));
           return (
-            <div key={field} className="progress-row">
-              <label>{field.toUpperCase()}: {done}/{target}</label>
-              <progress value={done} max={target}></progress>
+            <div key={f} className="progress-row">
+              <label>
+                {f.toUpperCase()}: {done}/{tgt}
+              </label>
+              <progress value={done} max={tgt} />
               <span>{pct}%</span>
             </div>
           );
         })}
       </div>
 
-      <Favorites data={[
-        { label:'Calories', value:totals.kcal,    goal:goals.kcal,    unit:'cals', color:'#4caf50' },
-        { label:'Protein',  value:totals.protein, goal:goals.protein, unit:'g',    color:'#9c27b0' },
-        { label:'Carbs',    value:totals.carbs,   goal:goals.carbs,   unit:'g',    color:'#03a9f4' },
-        { label:'Fat',      value:totals.fat,     goal:goals.fat,     unit:'g',    color:'#ff9800' },
-      ]} />
-
-      <MealsSection title="Breakfast" entries={meals.breakfast} onAdd={()=>{}} />
-      <MealsSection title="Lunch"     entries={meals.lunch}     onAdd={()=>{}} />
-      <MealsSection title="Dinner"    entries={meals.dinner}    onAdd={()=>{}} />
-      <MealsSection title="Snacks"    entries={meals.snacks}    onAdd={()=>{}} />
-
-      <HealthSection
-        data={{ water:0, bodyFat:null, steps:null, sleep:null, glucose:null, bp:null }}
-        onRecord={k=>{}}
-        onClear={k=>{}}
+      <Favorites
+        data={[
+          { label: "Cals", value: totals.kcal, goal: goals.kcal, unit: "cals", color: "#CC8B65" },
+          { label: "Prot", value: totals.protein, goal: goals.protein, unit: "g", color: "#013328" },
+          { label: "Carb", value: totals.carbs, goal: goals.carbs, unit: "g", color: "#4F3E34" },
+          { label: "Fat", value: totals.fat, goal: goals.fat, unit: "g", color: "#30312F" },
+        ]}
       />
 
-      <div className="scanner">
-        {!barcode ? (
-          <WebScanner
-            onDetected={handleDetected}
-            onError={e => { setError(e.message); setNeedsManual(true); }}
-          />
-        ) : needsManual ? (
-          <ManualEntryForm
-            code={barcode}
-            onSave={handleSaveCustom}
-            onCancel={() => { setBarcode(null); setNeedsManual(false); }}
-          />
-        ) : (
-          <div className="result-area">
-            <label>
-              Scanned:
-              <input
-                className="editable"
-                value={barcode}
-                onChange={e => setBarcode(e.target.value)}
-              />
-            </label>
-            {error && <p className="error">{error}</p>}
-            {info && (
-              <>
-                <p>
-                  <strong>{info.name}</strong>: {info.kcal} kcal<br/>
-                  P:{info.protein} C:{info.carbs} F:{info.fat}
-                </p>
-                <button onClick={addToLog}>➕ Add to Log</button>
-                <button onClick={() => setBarcode(null)}>🔄 Scan Again</button>
-              </>
-            )}
-          </div>
-        )}
-      </div>
+      {["breakfast", "lunch", "dinner", "snacks"].map(meal => (
+        <MealsSection
+          key={meal}
+          title={meal}
+          entries={mealBuckets[meal]}
+          onAdd={() => setManualMeal(meal)}
+        />
+      ))}
+
+      {manualMeal && (
+        <ManualEntryForm
+          mealType={manualMeal}
+          onSave={handleSaveManual}
+          onClose={() => setManualMeal(null)}
+        />
+      )}
+
+      <HealthSection
+        data={healthData}
+        onRecord={handleRecordHealth}
+        onClear={handleClearHealth}
+      />
+
+      <div className="scanner">{/* … your WebScanner / results … */}</div>
     </div>
   );
 }
