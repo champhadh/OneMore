@@ -1,3 +1,10 @@
+/* src/ManualEntryForm.css */
+
+/*
+  ManualEntryForm.css
+  Styles for the manual-entry modal form in the OneMore Web App.
+*/
+
 :root {
     /* Theme variables */
     --bg-backdrop: rgba(0, 0, 0, 0.5);
