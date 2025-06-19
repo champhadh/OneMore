@@ -1,26 +1,127 @@
 /* src/Favorites.css */
+
 .favorites-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 1rem;
+  margin-bottom: 2rem;
 }
+
 .fav-card {
   background: rgba(255,255,255,0.1);
   padding: 1rem;
   border-radius: 1rem;
   text-align: center;
   color: #E3DCD2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
+
 .ring-chart {
   position: relative;
-  width: 3rem; height: 3rem;
-  margin: 0.5rem auto;
+  width: 3rem !important;
+  height: 3rem !important;
+  margin: 0.5rem 0;
 }
-.ring-chart svg { transform: rotate(-90deg); }
-.ring-chart .bg { fill: none; stroke: #333; stroke-width: 2; }
-.ring-chart .fg { fill: none; stroke: var(--accent); stroke-width: 2; }
+
+.ring-chart svg {
+  width: 100% !important;
+  height: 100% !important;
+  transform: rotate(-90deg);
+}
+
+.ring-chart .bg {
+  fill: none;
+  stroke: #444;
+  stroke-width: 2;
+}
+
+.ring-chart .fg {
+  fill: none;
+  stroke: var(--beige);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
 .ring-chart .inner {
   position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ring-chart .inner .val {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.ring-chart .inner .unit {
+  font-size: 0.7rem;
+}
+
+.status {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Choice-modal styles */
+
+.choice-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.choice-modal {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(6px);
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 320px;
+  text-align: center;
+  color: #E3DCD2;
+}
+
+.choice-modal h2 {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+}
+
+.choice-modal .choice-btn,
+.choice-modal .choice-cancel {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  margin: 0.5rem 0.25rem;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.choice-modal .choice-btn {
+  background: rgba(204, 139, 101, 0.9);
+  color: #1A1A1A;
+}
+.choice-modal .choice-btn:hover {
+  background: rgba(204, 139, 101, 1);
+}
+
+.choice-modal .choice-cancel {
+  background: rgba(100, 100, 100, 0.8);
+  color: #E3DCD2;
+}
+.choice-modal .choice-cancel:hover {
+  background: rgba(100, 100, 100, 1);
 }
