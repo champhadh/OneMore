@@ -1,0 +1,67 @@
+:root {
+    /* your palette */
+    --bg-dark:        #2E2B29;
+    --panel-bg:       rgba(255, 255, 255, 0.05);
+    --glass-blur:     blur(12px);
+    --text-light:     #E3DCD2;
+    --text-muted:     rgba(227, 220, 210, 0.7);
+    --accent:         #CC8B65;
+  }
+  
+  .settings-page {
+    padding: 1rem;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    min-height: 100vh;
+    font-family: sans-serif;
+  }
+  
+  .section {
+    margin-bottom: 2rem;
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0.5rem;
+    color: var(--text-light);
+  }
+  
+  .item-list {
+    background: var(--panel-bg);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+  }
+  
+  .item + .item {
+    border-top: 1px solid rgba(227, 220, 210, 0.15);
+  }
+  
+  .icon {
+    font-size: 1.4rem;
+    width: 1.8rem;
+    text-align: center;
+    margin-right: 0.75rem;
+  }
+  
+  .label {
+    flex: 1;
+  }
+  
+  .arrow {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+  }
+  
+  /* subtle hover highlight */
+  .item:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  

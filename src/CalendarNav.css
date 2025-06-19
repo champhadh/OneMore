@@ -1,0 +1,49 @@
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    user-select: none;
+  }
+  .nav-btn, .week-btn {
+    background: none;
+    border: none;
+    color: var(--tan);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7,1fr);
+    flex: 1;
+  }
+  .day {
+    position: relative;
+    text-align: center;
+    padding: 0.25rem;
+    cursor: pointer;
+  }
+  .day.active .circle svg .fg { stroke: var(--green); }
+  .dow { font-size: 0.6rem; color: rgba(255,255,255,0.7); }
+  .dom { font-size: 1rem; font-weight: bold; color: var(--beige); }
+  .circle {
+    position: absolute;
+    top: -4px; right: 4px;
+    width: 24px; height: 24px;
+    pointer-events: none;
+  }
+  .circle svg {
+    width: 100%; height: 100%;
+    transform: rotate(-90deg);
+  }
+  .bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.2);
+    stroke-width: 4;
+  }
+  .fg {
+    fill: none;
+    stroke: var(--tan);
+    stroke-width: 4;
+    transition: stroke-dasharray 0.3s;
+  }
+  

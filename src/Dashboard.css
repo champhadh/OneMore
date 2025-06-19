@@ -1,0 +1,76 @@
+/* src/Dashboard.css */
+.dashboard {
+    background-color: #2E2B29;
+    color: #E3DCD2;
+    padding: 2rem;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .meal-section {
+    margin-bottom: 2.5rem;
+  }
+  
+  .meal-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .add-btn {
+    background: rgba(204, 139, 101, 0.8);
+    border: none;
+    color: #1A1A1A;
+    padding: 0.8rem 1.6rem;
+    border-radius: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+  }
+  
+  .add-btn:active {
+    transform: translateY(1px) scale(0.97);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+  }
+  
+  .modal {
+    background: #3B3836;
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    color: #E3DCD2;
+  }
+  
+  .modal input {
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: #e8e6e3;
+    font-size: 1rem;
+  }
+  

@@ -1,77 +1,85 @@
+// src/Dashboard.jsx
 import React, { useState } from 'react';
+import ManualEntryForm from './ManualEntryForm';
+import './Dashboard.css';
 
-export default function ManualEntryForm({ code, onSave, onCancel }) {
-  const [name,    setName]    = useState('');
-  const [kcal,    setKcal]    = useState('');
-  const [protein, setProtein] = useState('');
-  const [carbs,   setCarbs]   = useState('');
-  const [fat,     setFat]     = useState('');
+export default function Dashboard() {
+  // per‐meal calorie totals
+  const [breakfastTotal, setBreakfastTotal] = useState(0);
+  const [lunchTotal,    setLunchTotal]    = useState(0);
+  const [dinnerTotal,   setDinnerTotal]   = useState(0);
+  const [snacksTotal,   setSnacksTotal]   = useState(0);
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    onSave(code, {
-      name,
-      kcal:    parseFloat(kcal)    || 0,
-      protein: parseFloat(protein) || 0,
-      carbs:   parseFloat(carbs)   || 0,
-      fat:     parseFloat(fat)     || 0,
-    });
+  // which meal form is open (if any)
+  const [currentMeal, setCurrentMeal] = useState(null);
+  const [showForm,     setShowForm]    = useState(false);
+
+  // open manual‐entry form for a meal
+  const openForm = (mealType) => {
+    setCurrentMeal(mealType);
+    setShowForm(true);
+  };
+
+  // handle saving a new entry from the form
+  const handleSave = ({ mealType, calories }) => {
+    switch (mealType) {
+      case 'breakfast':
+        setBreakfastTotal((b) => b + calories);
+        break;
+      case 'lunch':
+        setLunchTotal((l) => l + calories);
+        break;
+      case 'dinner':
+        setDinnerTotal((d) => d + calories);
+        break;
+      case 'snacks':
+        setSnacksTotal((s) => s + calories);
+        break;
+      default:
+        break;
+    }
+    setShowForm(false);
+    setCurrentMeal(null);
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{
-        background: 'rgba(255,255,255,0.2)',
-        padding: '1rem',
-        borderRadius: '8px',
-        margin: '1rem',
-        textAlign: 'center',
-      }}
-    >
-      <h3>Define Product for "{code}"</h3>
-      <input
-        placeholder="Name"
-        value={name}
-        onChange={e => setName(e.target.value)}
-        required
-        style={{ margin: '0.4rem', padding: '0.4rem', width: '200px' }}
-      />
-      <div>
-        <input
-          placeholder="Kcal"
-          type="number"
-          value={kcal}
-          onChange={e => setKcal(e.target.value)}
-          required
-          style={{ margin: '0.4rem', padding: '0.4rem', width: '80px' }}
+    <div className="dashboard">
+      <section className="meal-section">
+        <h2>BREAKFAST: {breakfastTotal} kcal</h2>
+        <button className="add-btn" onClick={() => openForm('breakfast')}>
+          Add Breakfast
+        </button>
+      </section>
+
+      <section className="meal-section">
+        <h2>LUNCH: {lunchTotal} kcal</h2>
+        <button className="add-btn" onClick={() => openForm('lunch')}>
+          Add Lunch
+        </button>
+      </section>
+
+      <section className="meal-section">
+        <h2>DINNER: {dinnerTotal} kcal</h2>
+        <button className="add-btn" onClick={() => openForm('dinner')}>
+          Add Dinner
+        </button>
+      </section>
+
+      <section className="meal-section">
+        <h2>SNACKS: {snacksTotal} kcal</h2>
+        <button className="add-btn" onClick={() => openForm('snacks')}>
+          Add Snacks
+        </button>
+      </section>
+
+      {showForm && (
+        <ManualEntryForm
+          mealType={currentMeal}
+          onSave={handleSave}
+          onClose={() => setShowForm(false)}
         />
-        <input
-          placeholder="Protein"
-          type="number"
-          value={protein}
-          onChange={e => setProtein(e.target.value)}
-          style={{ margin: '0.4rem', padding: '0.4rem', width: '80px' }}
-        />
-        <input
-          placeholder="Carbs"
-          type="number"
-          value={carbs}
-          onChange={e => setCarbs(e.target.value)}
-          style={{ margin: '0.4rem', padding: '0.4rem', width: '80px' }}
-        />
-        <input
-          placeholder="Fat"
-          type="number"
-          value={fat}
-          onChange={e => setFat(e.target.value)}
-          style={{ margin: '0.4rem', padding: '0.4rem', width: '80px' }}
-        />
-      </div>
-      <button type="submit" style={{ margin: '0.5rem' }}>💾 Save</button>
-      <button type="button" onClick={onCancel} style={{ margin: '0.5rem' }}>
-        ❌ Cancel
-      </button>
-    </form>
+      )}
+    </div>
   );
 }
+

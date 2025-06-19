@@ -1,20 +1,11 @@
 /* src/index.css */
-
-/* Make html/body/root full-height so backgrounds don't swallow everything */
 html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
 }
-
-/* Global font + background */
 body {
   font-family: 'Segoe UI', sans-serif;
-  background-color: #100C0D; /* dark */
-  color: #E3DCD2;            /* beige */
-}
-
-/* Allow our container to scroll if needed */
-#root {
-  overflow: auto;
+  background-color: #100C0D;
+  color: #E3DCD2;
 }
