@@ -1,85 +1,79 @@
-// src/Dashboard.jsx
 import React, { useState } from 'react';
-import ManualEntryForm from './ManualEntryForm';
-import './Dashboard.css';
+import './ManualEntryForm.css';
 
-export default function Dashboard() {
-  // per‐meal calorie totals
-  const [breakfastTotal, setBreakfastTotal] = useState(0);
-  const [lunchTotal,    setLunchTotal]    = useState(0);
-  const [dinnerTotal,   setDinnerTotal]   = useState(0);
-  const [snacksTotal,   setSnacksTotal]   = useState(0);
+export default function ManualEntryForm({ mealType, onSave, onClose }) {
+  const [name, setName]       = useState('');
+  const [kcal, setKcal]       = useState('');
+  const [protein, setProtein] = useState('');
+  const [carbs, setCarbs]     = useState('');
+  const [fat, setFat]         = useState('');
 
-  // which meal form is open (if any)
-  const [currentMeal, setCurrentMeal] = useState(null);
-  const [showForm,     setShowForm]    = useState(false);
-
-  // open manual‐entry form for a meal
-  const openForm = (mealType) => {
-    setCurrentMeal(mealType);
-    setShowForm(true);
-  };
-
-  // handle saving a new entry from the form
-  const handleSave = ({ mealType, calories }) => {
-    switch (mealType) {
-      case 'breakfast':
-        setBreakfastTotal((b) => b + calories);
-        break;
-      case 'lunch':
-        setLunchTotal((l) => l + calories);
-        break;
-      case 'dinner':
-        setDinnerTotal((d) => d + calories);
-        break;
-      case 'snacks':
-        setSnacksTotal((s) => s + calories);
-        break;
-      default:
-        break;
-    }
-    setShowForm(false);
-    setCurrentMeal(null);
+  const handleSubmit = e => {
+    e.preventDefault();
+    onSave({
+      mealType,
+      name,
+      kcal:    Number(kcal),
+      protein: Number(protein),
+      carbs:   Number(carbs),
+      fat:     Number(fat),
+    });
   };
 
   return (
-    <div className="dashboard">
-      <section className="meal-section">
-        <h2>BREAKFAST: {breakfastTotal} kcal</h2>
-        <button className="add-btn" onClick={() => openForm('breakfast')}>
-          Add Breakfast
-        </button>
-      </section>
-
-      <section className="meal-section">
-        <h2>LUNCH: {lunchTotal} kcal</h2>
-        <button className="add-btn" onClick={() => openForm('lunch')}>
-          Add Lunch
-        </button>
-      </section>
-
-      <section className="meal-section">
-        <h2>DINNER: {dinnerTotal} kcal</h2>
-        <button className="add-btn" onClick={() => openForm('dinner')}>
-          Add Dinner
-        </button>
-      </section>
-
-      <section className="meal-section">
-        <h2>SNACKS: {snacksTotal} kcal</h2>
-        <button className="add-btn" onClick={() => openForm('snacks')}>
-          Add Snacks
-        </button>
-      </section>
-
-      {showForm && (
-        <ManualEntryForm
-          mealType={currentMeal}
-          onSave={handleSave}
-          onClose={() => setShowForm(false)}
-        />
-      )}
+    <div className="manual-entry-backdrop">
+      <form className="manual-entry-form" onSubmit={handleSubmit}>
+        <h2>Add {mealType}</h2>
+        <label>
+          Name
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Calories
+          <input
+            type="number"
+            value={kcal}
+            onChange={e => setKcal(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Protein (g)
+          <input
+            type="number"
+            value={protein}
+            onChange={e => setProtein(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Carbs (g)
+          <input
+            type="number"
+            value={carbs}
+            onChange={e => setCarbs(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Fat (g)
+          <input
+            type="number"
+            value={fat}
+            onChange={e => setFat(e.target.value)}
+            required
+          />
+        </label>
+        <div className="buttons">
+          <button type="submit">Save</button>
+          <button type="button" onClick={onClose}>Cancel</button>
+        </div>
+      </form>
     </div>
   );
 }
-
