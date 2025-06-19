@@ -1,73 +1,27 @@
+/* src/SettingsModal.css */
 .settings-backdrop {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  .settings-modal {
-    background: #3B3836;
-    color: #E3DCD2;
-    padding: 1.5rem;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 360px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.7);
-  }
-  
-  .settings-modal h2 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-  
-  .input-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-  
-  .input-row label {
-    flex: 1;
-    font-size: 0.9rem;
-  }
-  
-  .input-row input {
-    width: 4ch;
-    padding: 0.25rem;
-    border: none;
-    border-radius: 6px;
-    text-align: right;
-    background: #5A5754;
-    color: #E3DCD2;
-  }
-  
-  .buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-  
-  .buttons button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-  
-  .buttons button:first-child {
-    background: #CC8B65;
-    color: #2E2B29;
-  }
-  
-  .buttons button:last-child {
-    background: #555;
-    color: #E3DCD2;
-  }
-  
+  position: fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.6);
+  display:flex; align-items:center; justify-content:center; z-index:1000;
+}
+.settings-modal {
+  background: #3B3836;
+  color: #E3DCD2;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 90%; max-width:360px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.7);
+}
+.input-row {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;
+}
+.input-row label { flex:1; }
+.input-row input {
+  width:4ch; padding:0.25rem; border:none; border-radius:6px;
+  background:#5A5754; color:#E3DCD2; text-align:right;
+}
+.buttons {
+  display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;
+}
+.buttons button:first-child { background:#CC8B65; color:#2E2B29; }
+.buttons button:last-child  { background:#555;   color:#E3DCD2; }

@@ -1,12 +1,12 @@
+// src/GoalsForm.jsx
 import React, { useState } from 'react';
 import './App.css';
 
 export default function GoalsForm({ initialGoals, onSave }) {
   const [goals, setGoals] = useState(initialGoals);
 
-  const handleChange = field => e => {
+  const handleChange = field => e =>
     setGoals({ ...goals, [field]: parseInt(e.target.value, 10) || 0 });
-  };
 
   const handleSubmit = e => {
     e.preventDefault();

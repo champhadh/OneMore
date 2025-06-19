@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from 'react';
 import LoginForm from './LoginForm';
 import Dashboard from './Dashboard';
@@ -17,8 +18,7 @@ export default function App() {
     setUser(null);
   };
 
-  if (!user) {
-    return <LoginForm onLogin={handleLogin} />;
-  }
-  return <Dashboard currentUser={user} onLogout={handleLogout} />;
+  return !user
+    ? <LoginForm onLogin={handleLogin} />
+    : <Dashboard currentUser={user} onLogout={handleLogout} />;
 }

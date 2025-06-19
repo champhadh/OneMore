@@ -1,81 +1,46 @@
 /* src/ManualEntryForm.css */
-
-/*
-  ManualEntryForm.css
-  Styles for the manual-entry modal form in the OneMore Web App.
-*/
-
 :root {
-    /* Theme variables */
-    --bg-backdrop: rgba(0, 0, 0, 0.5);
-    --bg-form: rgba(255, 255, 255, 0.1);
+    --bg-backdrop: rgba(0,0,0,0.5);
+    --bg-form: rgba(255,255,255,0.1);
     --text-color: #E3DCD2;
     --border-radius: 1rem;
     --gap: 1rem;
   }
   
   .manual-entry-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed; top:0; left:0;
+    width:100%; height:100%;
     background: var(--bg-backdrop);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    display:flex; justify-content:center; align-items:center;
+    z-index:1000;
   }
-  
   .manual-entry-form {
     background: var(--bg-form);
     backdrop-filter: blur(6px);
-    padding: 2rem;
+    padding:2rem;
     border-radius: var(--border-radius);
-    display: flex;
-    flex-direction: column;
+    display:flex;
+    flex-direction:column;
     gap: var(--gap);
-    width: 300px;
+    width:300px;
     color: var(--text-color);
   }
-  
   .manual-entry-form h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    text-align: center;
+    margin:0; text-align:center; font-size:1.25rem;
   }
-  
   .manual-entry-form label {
-    display: flex;
-    flex-direction: column;
-    font-size: 0.9rem;
+    display:flex; flex-direction:column; font-size:0.9rem;
   }
-  
   .manual-entry-form input {
-    margin-top: 0.25rem;
-    padding: 0.5rem;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
+    margin-top:0.25rem; padding:0.5rem;
+    border:none; border-radius:0.5rem; font-size:1rem;
   }
-  
   .buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: var(--gap);
+    display:flex; justify-content:flex-end; gap:0.5rem; margin-top:var(--gap);
   }
-  
   .buttons button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.2);
-    transition: background 0.2s ease;
+    padding:0.5rem 1rem; border:none; border-radius:var(--border-radius);
+    cursor:pointer; background:rgba(255,255,255,0.2); transition:0.2s;
   }
-  
-  .buttons button:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
+  .buttons button:hover { background:rgba(255,255,255,0.3); }
   

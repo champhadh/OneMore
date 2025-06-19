@@ -1,32 +1,20 @@
+/* src/HealthSection.css */
 .health-section {
   margin: 2rem 0;
 }
-.health-section h2 {
-  font-size: 1.5rem;
-  color: #E3DCD2;
-  margin-bottom: 1rem;
+.health-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(1,51,40,0.1); padding:0.75rem; border-radius:0.5rem;
+  margin-bottom:0.75rem;
 }
-.health-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(1, 51, 40, 0.1);
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  margin-bottom: 0.75rem;
+.health-info .label {
+  font-weight:bold; color:#E3DCD2;
 }
-.health-item .info {
-  flex: 1;
+.record-btn, .clear-btn {
+  background: rgba(204,139,101,0.9);
+  border: none; color:#1A1A1A; padding:0.5rem; border-radius:50%;
+  cursor:pointer; transition:0.2s;
 }
-.health-item .actions button {
-  background: rgba(204, 139, 101, 0.9);
-  border: none;
-  color: #1A1A1A;
-  padding: 0.5rem;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.health-item .actions button:hover {
-  transform: scale(1.1);
+.record-btn:hover, .clear-btn:hover {
+  transform:scale(1.1);
 }

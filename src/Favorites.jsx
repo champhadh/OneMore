@@ -1,3 +1,4 @@
+// src/Favorites.jsx
 import React from 'react';
 import './Favorites.css';
 
@@ -11,22 +12,16 @@ export default function Favorites({ data }) {
             <h3>{label.toUpperCase()}</h3>
             <div className="ring-chart" style={{ '--pct': pct, '--accent': color }}>
               <svg viewBox="0 0 36 36">
-                <path
-                  className="bg"
-                  d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32"
-                />
-                <path
-                  className="fg"
-                  d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32"
-                  strokeDasharray={`${pct},100`}
-                />
+                <path className="bg" d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32"/>
+                <path className="fg" d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32"
+                      strokeDasharray={`${pct},100`}/>
               </svg>
               <div className="inner">
                 <span className="val">{value}</span>
                 <span className="unit">{unit}</span>
               </div>
             </div>
-            <p className="status">{pct<100 ? 'UNDER' : 'OVER'}</p>
+            <p className="status">{pct < 100 ? 'UNDER' : 'OVER'}</p>
           </div>
         );
       })}

@@ -1,54 +1,26 @@
-import React, { useEffect, useRef } from 'react';
-import Quagga from 'quagga';
+// src/WebScanner.jsx
+import React, { useRef, useEffect } from 'react';
+import Quagga from 'quagga'; // install quagga via npm
+import './WebScanner.css';
 
 export default function WebScanner({ onDetected, onError }) {
-  const videoRef = useRef(null);
+  const videoRef = useRef();
 
   useEffect(() => {
     Quagga.init({
-      inputStream: {
-        name: 'Live',
-        type: 'LiveStream',
+      inputStream:{
+        type:'LiveStream',
         target: videoRef.current,
-        constraints: { facingMode: 'environment' },
+        constraints:{ facingMode: 'environment' }
       },
-      decoder: { readers: ['ean_reader','upc_reader','code_128_reader'] },
+      decoder:{ readers:['ean_reader','upc_reader'] }
     }, err => {
-      if (err) {
-        console.error(err);
-        onError(err);
-      } else {
-        Quagga.start();
-      }
+      if (err) return onError(err);
+      Quagga.start();
     });
-
-    // ―― Debounce: require seeing the same code 3 times before firing ――
-    const counts = {};
-    Quagga.onDetected(result => {
-      const code = result.codeResult.code;
-      counts[code] = (counts[code] || 0) + 1;
-      if (counts[code] >= 3) {
-        Quagga.offDetected();
-        Quagga.stop();
-        onDetected(code);
-      }
-    });
-
-    return () => {
-      Quagga.offDetected();
-      Quagga.stop();
-    };
+    Quagga.onDetected(result => onDetected(result.codeResult.code));
+    return () => Quagga.stop();
   }, [onDetected, onError]);
 
-  return (
-    <div
-      ref={videoRef}
-      style={{
-        width: 640,
-        height: 480,
-        margin: '0 auto',
-        border: '2px solid rgba(255,255,255,0.3)'
-      }}
-    />
-  );
+  return <div ref={videoRef} className="scanner-stream"/>;
 }

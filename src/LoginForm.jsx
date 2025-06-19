@@ -1,5 +1,6 @@
+// src/LoginForm.jsx
 import React, { useState } from 'react';
-import './App.css'; // make sure App.css is imported so the styles apply
+import './App.css';
 
 export default function LoginForm({ onLogin }) {
   const [username, setUsername]   = useState('');

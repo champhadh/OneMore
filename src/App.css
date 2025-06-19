@@ -1,9 +1,10 @@
+/* src/App.css */
 /* your “glass” container */
 .container {
   max-width: 900px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background: rgba(227, 220, 210, 0.3); /* frosted-glass base */
+  background: rgba(227, 220, 210, 0.3);
   backdrop-filter: blur(8px);
   border-radius: 1rem;
   box-shadow: 0 12px 24px rgba(0,0,0,0.2);
