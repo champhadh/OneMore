@@ -6,13 +6,14 @@ import ManualEntryForm from './ManualEntryForm';
 import NutritionModal from './NutritionModal';
 import HealthSection from './HealthSection';
 import WebScanner from './WebScanner';
-import SettingsModal from './SettingsModal';
 import Favorites from './Favorites';
 import './Dashboard.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard({ currentUser, onLogout }) {
+  const navigate = useNavigate();
   const LOG_KEY   = `onemore-logs-${currentUser}`;
-  const GOALS_KEY = `onemore-goals-${currentUser}`;
+  const MACROS_GOAL_KEY = 'onemore-macros-goal';
 
   // State
   const [date, setDate]                 = useState(new Date());
@@ -23,17 +24,30 @@ export default function Dashboard({ currentUser, onLogout }) {
   const [scanningMeal, setScanningMeal] = useState(null);
   const [scannedItem, setScannedItem]   = useState(null);
   const [healthData, setHealthData]     = useState({ water:null, bodyFat:null, steps:null, sleep:null, glucose:null, bp:null });
-  const [showSettings, setShowSettings] = useState(false);
+  const [scanError, setScanError] = useState("");
+  const [scanLock, setScanLock] = useState(false);
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [editingMealType, setEditingMealType] = useState(null);
+  const [formError, setFormError] = useState("");
+  const [editingHealthKey, setEditingHealthKey] = useState(null);
+  const [editingHealthValue, setEditingHealthValue] = useState("");
+  const [healthFormError, setHealthFormError] = useState("");
 
   // Load / Persist
   useEffect(() => {
-    const g = JSON.parse(localStorage.getItem(GOALS_KEY)); if (g) setGoals(g);
     const l = JSON.parse(localStorage.getItem(LOG_KEY));  if (l) setLogs(l);
-  }, [GOALS_KEY, LOG_KEY]);
 
-  useEffect(() => {
-    localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
-  }, [goals, GOALS_KEY]);
+    // Load macro goals from settings
+    const savedMacros = JSON.parse(localStorage.getItem(MACROS_GOAL_KEY) || '{}');
+    if (savedMacros.calories) {
+      setGoals({
+        kcal: Number(savedMacros.calories) || 0,
+        protein: Number(savedMacros.protein) || 0,
+        carbs: Number(savedMacros.carbs) || 0,
+        fat: Number(savedMacros.fat) || 0,
+      });
+    }
+  }, [LOG_KEY]);
 
   useEffect(() => {
     localStorage.setItem(LOG_KEY, JSON.stringify(logs));
@@ -46,10 +60,27 @@ export default function Dashboard({ currentUser, onLogout }) {
 
   // Save manual or scanned entry
   const handleSaveManual = entry => {
-    setLogs(l => [
-      { time: new Date().toLocaleTimeString(), mealType: entry.mealType, ...entry },
-      ...l
-    ]);
+    // Validation
+    if (!entry.name || entry.name.trim() === "") {
+      setFormError("Name is required");
+      return;
+    }
+    if ([entry.kcal, entry.protein, entry.carbs, entry.fat].some(v => isNaN(v) || v === null || v === "")) {
+      setFormError("All macros must be numbers");
+      return;
+    }
+    setFormError("");
+    const todayStr = date.toISOString().slice(0,10); // YYYY-MM-DD
+    if (editingEntry !== null && editingMealType) {
+      setLogs(l => l.map((e, idx) => (e.mealType === editingMealType && idx === editingEntry ? { ...e, ...entry, date: todayStr } : e)));
+      setEditingEntry(null);
+      setEditingMealType(null);
+    } else {
+      setLogs(l => [
+        { time: new Date().toLocaleTimeString(), mealType: entry.mealType, ...entry, date: todayStr },
+        ...l
+      ]);
+    }
     setManualMeal(null);
   };
 
@@ -65,12 +96,33 @@ export default function Dashboard({ currentUser, onLogout }) {
     });
   };
 
-  const handleSaveGoals = newGoals => { setGoals(newGoals); setShowSettings(false); };
+  const handleRecord = (key, value) => {
+    if (typeof value === "number") {
+      setHealthData(h => ({ ...h, [key]: value }));
+      return;
+    }
+    setEditingHealthKey(key);
+    setEditingHealthValue(healthData[key] !== null ? healthData[key] : "");
+    setHealthFormError("");
+  };
 
-  const handleRecord = key => { const v=prompt(`Enter ${key}:`); if (v!=null) setHealthData(h=>({...h,[key]:Number(v)})); };
-  const handleClear  = key => setHealthData(h=>({...h,[key]:null}));
+  const handleHealthSave = () => {
+    if (editingHealthValue === "" || isNaN(editingHealthValue)) {
+      setHealthFormError("Please enter a valid number");
+      return;
+    }
+    setHealthData(h => ({ ...h, [editingHealthKey]: Number(editingHealthValue) }));
+    setEditingHealthKey(null);
+    setEditingHealthValue("");
+    setHealthFormError("");
+  };
+
+  const handleClear = key => setHealthData(h=>({...h,[key]:null}));
 
   const handleDetected = async code => {
+    if (scanLock) return;
+    setScanLock(true);
+    setScanError("");
     try {
       const res  = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
       const json = await res.json();
@@ -80,12 +132,23 @@ export default function Dashboard({ currentUser, onLogout }) {
           nutriments: json.product.nutriments,
           mealType:   scanningMeal
         });
-      } else alert('Product not found');
-    } catch(err) { console.error(err); alert('Fetch error'); }
+      } else {
+        setScanError("Product not found");
+        setScanLock(false);
+      }
+    } catch(err) {
+      console.error(err);
+      setScanError("Fetch error");
+      setScanLock(false);
+    }
   };
 
+  // Filter logs by selected date
+  const dateStr = date.toISOString().slice(0,10);
+  const logsForDate = logs.filter(e => (e.date || "") === dateStr);
+
   // Computed totals & buckets by mealType
-  const totals = logs.reduce((a,e)=>( {
+  const totals = logsForDate.reduce((a,e)=>( {
     kcal: a.kcal + e.kcal,
     protein: a.protein + e.protein,
     carbs: a.carbs + e.carbs,
@@ -93,10 +156,10 @@ export default function Dashboard({ currentUser, onLogout }) {
   }), { kcal:0, protein:0, carbs:0, fat:0 });
 
   const mealBuckets = {
-    breakfast: logs.filter(e => e.mealType === 'breakfast'),
-    lunch:     logs.filter(e => e.mealType === 'lunch'),
-    dinner:    logs.filter(e => e.mealType === 'dinner'),
-    snacks:    logs.filter(e => e.mealType === 'snacks')
+    breakfast: logsForDate.filter(e => e.mealType === 'breakfast'),
+    lunch:     logsForDate.filter(e => e.mealType === 'lunch'),
+    dinner:    logsForDate.filter(e => e.mealType === 'dinner'),
+    snacks:    logsForDate.filter(e => e.mealType === 'snacks')
   };
 
   return (
@@ -104,19 +167,15 @@ export default function Dashboard({ currentUser, onLogout }) {
       <header className="app-header">
         <h1>OneMore</h1>
         <div>
-          <button className="settings-btn" onClick={()=>setShowSettings(true)}>⚙️</button>
+          <button className="settings-btn" onClick={()=>navigate('/settings')}>⚙️</button>
           <button className="logout" onClick={onLogout}>Logout</button>
         </div>
       </header>
 
-      <SettingsModal
-        isOpen={showSettings}
-        initialGoals={goals}
-        onSave={handleSaveGoals}
-        onClose={()=>setShowSettings(false)}
+      <CalendarNav
+        selectedDate={date}
+        onDateChange={setDate}
       />
-
-      <CalendarNav date={date} onPrev={handlePrev} onNext={handleNext} onPickWeek={handlePickWeek} />
 
       {/* Meal sections with remove support */}
       {['breakfast','lunch','dinner','snacks'].map(meal => (
@@ -125,6 +184,11 @@ export default function Dashboard({ currentUser, onLogout }) {
           title={meal}
           entries={mealBuckets[meal]}
           onAdd={()=>setChoiceMeal(meal)}
+          onEdit={idx => {
+            setEditingEntry(idx);
+            setEditingMealType(meal);
+            setManualMeal(meal);
+          }}
           onRemove={idx=>handleRemove(meal, idx)}
         />
       ))}
@@ -144,8 +208,13 @@ export default function Dashboard({ currentUser, onLogout }) {
       {/* Scanner view */}
       {scanningMeal && !scannedItem && (
         <div className="scanner-modal">
-          <WebScanner onDetected={handleDetected} onError={e=>console.error(e)} />
-          <button className="close-btn" onClick={()=>setScanningMeal(null)}>Cancel</button>
+          <WebScanner onDetected={handleDetected} onError={e=>setScanError(e.message || "Scanner error")}/>
+          {scanError && <div className="error" style={{marginTop:8}}>{scanError}</div>}
+          <button className="close-btn" onClick={()=>{
+            setScanningMeal(null);
+            setScanError("");
+            setScanLock(false);
+          }}>Cancel</button>
         </div>
       )}
 
@@ -158,8 +227,15 @@ export default function Dashboard({ currentUser, onLogout }) {
             handleSaveManual({ mealType: scannedItem.mealType, ...entry });
             setScannedItem(null);
             setScanningMeal(null);
+            setScanError("");
+            setScanLock(false);
           }}
-          onClose={()=>{ setScannedItem(null); setScanningMeal(null); }}
+          onClose={()=>{
+            setScannedItem(null);
+            setScanningMeal(null);
+            setScanError("");
+            setScanLock(false);
+          }}
         />
       )}
 
@@ -168,25 +244,13 @@ export default function Dashboard({ currentUser, onLogout }) {
         <ManualEntryForm
           mealType={manualMeal}
           onSave={handleSaveManual}
-          onClose={()=>setManualMeal(null)}
+          onClose={()=>{ setManualMeal(null); setEditingEntry(null); setEditingMealType(null); setFormError(""); }}
+          initialValues={editingEntry !== null && editingMealType ? mealBuckets[editingMealType][editingEntry] : null}
+          error={formError}
         />
       )}
 
-      {/* Progress bars */}
-      {(goals.kcal||goals.protein||goals.carbs||goals.fat)>0 && (
-        <div className="progress-bars">
-          {['kcal','protein','carbs','fat'].map(f=>{
-            const done = totals[f]; const tgt = goals[f]; const pct = tgt>0?Math.min(100,Math.round(done/tgt*100)):0;
-            return (
-              <div key={f} className="progress-row">
-                <label>{f.toUpperCase()}: {done}/{tgt}</label>
-                <progress value={done} max={tgt||1} />
-                <span>{pct}%</span>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      {/* Progress bars - REMOVED */}
 
       <Favorites data={[
         { label:'Calories', value:totals.kcal, goal:goals.kcal, unit:'kcal' },
@@ -196,6 +260,25 @@ export default function Dashboard({ currentUser, onLogout }) {
       ]} />
 
       <HealthSection data={healthData} onRecord={handleRecord} onClear={handleClear} />
+
+      {editingHealthKey && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Edit {editingHealthKey.toUpperCase()}</h3>
+            {healthFormError && <div className="error" style={{marginBottom:8}}>{healthFormError}</div>}
+            <input
+              type="number"
+              value={editingHealthValue}
+              onChange={e => setEditingHealthValue(e.target.value)}
+              className="modal-input"
+            />
+            <div className="modal-buttons">
+              <button onClick={handleHealthSave}>Save</button>
+              <button onClick={() => { setEditingHealthKey(null); setEditingHealthValue(""); setHealthFormError(""); }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,173 @@
+/* src/LoginForm.css */
+.login-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.login-title {
+  position: absolute;
+  top: 15vh; /* position from top of viewport */
+  color: white;
+  font-size: 3rem;
+  font-weight: bold;
+  z-index: 1;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+
+.background-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+}
+
+.login-modal {
+  margin-top: 10vh; /* Push modal down to not overlap with title */
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab-buttons {
+  display: flex;
+  background: rgba(50, 50, 50, 0.5);
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+.tab-buttons button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #aaa;
+  padding: 0.6rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.tab-buttons button.active {
+  background: #333;
+  color: #fff;
+}
+
+.login-modal h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.login-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.name-fields {
+  display: flex;
+  gap: 1rem;
+}
+.name-fields input {
+  width: 50%;
+}
+
+.login-modal input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  padding: 0.8rem 1rem;
+  color: #fff;
+  font-size: 1rem;
+}
+.login-modal input::placeholder {
+  color: #888;
+}
+
+.phone-field {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  padding-left: 1rem;
+}
+.phone-field span {
+  margin-right: 0.5rem;
+}
+.phone-field input {
+  border: none;
+  background: transparent;
+  padding-left: 0;
+  flex: 1;
+}
+
+.primary-btn {
+  background: #fff;
+  color: #111;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.divider {
+  text-align: center;
+  color: #888;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  position: relative;
+}
+.divider::before, .divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 35%;
+  height: 1px;
+  background: #444;
+}
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.social-logins {
+  display: flex;
+  gap: 1rem;
+}
+.social-btn {
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.terms {
+  font-size: 0.75rem;
+  color: #888;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.error-message {
+  color: #ff5050;
+  text-align: center;
+} 

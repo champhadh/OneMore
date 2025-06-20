@@ -8,21 +8,22 @@
 }
 
 .fav-card {
-  background: rgba(255,255,255,0.1);
+  background: var(--color-bg-card);
   padding: 1rem;
   border-radius: 1rem;
   text-align: center;
-  color: #E3DCD2;
+  color: var(--color-text-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .ring-chart {
   position: relative;
-  width: 3rem !important;
-  height: 3rem !important;
+  width: 4rem !important;
+  height: 4rem !important;
   margin: 0.5rem 0;
 }
 
@@ -34,15 +35,16 @@
 
 .ring-chart .bg {
   fill: none;
-  stroke: #444;
-  stroke-width: 2;
+  stroke: var(--color-progress-bg);
+  stroke-width: 4;
 }
 
 .ring-chart .fg {
   fill: none;
-  stroke: var(--beige);
-  stroke-width: 2;
+  stroke: var(--color-progress);
+  stroke-width: 4;
   stroke-linecap: round;
+  transition: stroke-dasharray 0.3s;
 }
 
 .ring-chart .inner {
@@ -57,17 +59,18 @@
 
 .ring-chart .inner .val {
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .ring-chart .inner .unit {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 }
 
 .status {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  font-weight: 500;
 }
 
 /* Choice-modal styles */

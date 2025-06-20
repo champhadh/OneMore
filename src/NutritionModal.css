@@ -10,8 +10,8 @@
   }
   
   .nutrition-modal {
-    background: #2E2B29;
-    color: #E3DCD2;
+    background: var(--color-bg-main);
+    color: var(--color-text-primary);
     border-radius: 1rem;
     width: 90%; max-width: 400px;
     display: flex;
@@ -25,12 +25,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background: #1F1D1B;
+    background: var(--color-bg-card);
   }
   .nav-btn {
     background: none;
     border: none;
-    color: #CC8B65;
+    color: var(--color-text-secondary);
     cursor: pointer;
     font-size: 1rem;
   }
@@ -47,13 +47,14 @@
     width: 64px; height: 64px;
     object-fit: contain;
     border-radius: 0.5rem;
-    background: #3B3836;
+    background: var(--color-bg-modal);
   }
   .food-info h2 { margin: 0; font-size: 1.25rem; }
   .food-info .brand {
     margin: 0;
     font-size: 0.9rem;
-    color: rgba(227,220,210,0.7);
+    color: var(--color-text-primary);
+    opacity: 0.7;
   }
   
   .nutrition-facts {
@@ -64,13 +65,23 @@
   .fact-row {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid var(--color-border);
   }
   .fact-label, .fact-value { font-size: 0.9rem; }
+  .fact-input {
+    background: var(--color-bg-input);
+    color: var(--color-text-input);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+    width: 5rem;
+    text-align: right;
+  }
   
   .nutrition-footer {
-    background: #1F1D1B;
+    background: var(--color-bg-card);
     padding: 1rem;
     display: flex;
     justify-content: flex-end;
@@ -83,9 +94,9 @@
   .quantity-picker input {
     width: 4rem;
     padding: 0.25rem;
-    background: #3B3836;
-    color: #E3DCD2;
-    border: none;
+    background: var(--color-bg-input);
+    color: var(--color-text-input);
+    border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     text-align: right;
   }

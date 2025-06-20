@@ -1,10 +1,10 @@
 /* src/Dashboard.css */
 .dashboard {
-    background-color: #2E2B29;
-    color: #E3DCD2;
+    background-color: var(--color-bg-main);
+    color: var(--color-text-primary);
     padding: 2rem;
     min-height: 100vh;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: var(--font-primary);
   }
   
   .meal-section {
@@ -55,13 +55,13 @@
   }
   
   .modal {
-    background: #3B3836;
+    background: var(--color-bg-modal);
     padding: 2rem;
     border-radius: 1rem;
     width: 90%;
     max-width: 400px;
     box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    color: #E3DCD2;
+    color: var(--color-text-primary);
   }
   
   .modal input {
@@ -70,7 +70,26 @@
     padding: 0.75rem;
     border-radius: 0.5rem;
     border: none;
-    background: #e8e6e3;
+    background: var(--color-bg-input);
+    color: var(--color-text-input);
     font-size: 1rem;
+  }
+  
+  .error {
+    color: var(--color-error);
+    margin-top: 8px;
+  }
+  
+  .close-btn {
+    background: var(--color-bg-btn-secondary);
+    color: var(--color-text-btn-secondary);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  .close-btn:hover {
+    background: var(--color-bg-btn-secondary-hover);
   }
   

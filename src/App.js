@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import LoginForm from './LoginForm';
 import Dashboard from './Dashboard';
+import Settings from './Settings';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 export default function App() {
   const [user, setUser] = useState(
@@ -18,7 +20,19 @@ export default function App() {
     setUser(null);
   };
 
-  return !user
-    ? <LoginForm onLogin={handleLogin} />
-    : <Dashboard currentUser={user} onLogout={handleLogout} />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        {!user ? (
+          <Route path="*" element={<LoginForm onLogin={handleLogin} />} />
+        ) : (
+          <>
+            <Route path="/" element={<Dashboard currentUser={user} onLogout={handleLogout} />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </>
+        )}
+      </Routes>
+    </BrowserRouter>
+  );
 }

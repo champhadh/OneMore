@@ -5,6 +5,7 @@ import './NutritionModal.css';
 export default function NutritionModal({ product, nutriments, onAdd, onClose }) {
   const [amount, setAmount] = useState(1);
   const [macros, setMacros] = useState({ kcal: 0, protein: 0, carbs: 0, fat: 0 });
+  const [error, setError] = useState("");
   const unit = product.serving_size || 'serving';
 
   // Initialize editable macros from the API data
@@ -18,9 +19,18 @@ export default function NutritionModal({ product, nutriments, onAdd, onClose }) 
   }, [nutriments]);
 
   const handleAdd = () => {
-    // Multiply by amount directly (no /100)
+    const name = product.product_name || product.generic_name || 'Unknown';
+    if (!name || name.trim() === "") {
+      setError("Name is required");
+      return;
+    }
+    if ([macros.kcal, macros.protein, macros.carbs, macros.fat].some(v => isNaN(v) || v === null || v === "")) {
+      setError("All macros must be numbers");
+      return;
+    }
+    setError("");
     const entry = {
-      name:    product.product_name || product.generic_name || 'Unknown',
+      name,
       kcal:    Math.round(macros.kcal    * amount),
       protein: Math.round(macros.protein * amount),
       carbs:   Math.round(macros.carbs   * amount),
@@ -45,6 +55,8 @@ export default function NutritionModal({ product, nutriments, onAdd, onClose }) 
           <span className="nav-title">Add Food</span>
           <button onClick={handleAdd} className="nav-btn nav-add">Add</button>
         </nav>
+
+        {error && <div className="error" style={{margin: '0 1rem', color: '#cc5040'}}>{error}</div>}
 
         <header className="nutrition-header">
           {product.image_url && (

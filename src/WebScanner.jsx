@@ -5,21 +5,41 @@ import './WebScanner.css';
 
 export default function WebScanner({ onDetected, onError }) {
   const videoRef = useRef();
+  const scannerRunning = useRef(false);
 
   useEffect(() => {
-    Quagga.init({
-      inputStream:{
-        type:'LiveStream',
-        target: videoRef.current,
-        constraints:{ facingMode: 'environment' }
-      },
-      decoder:{ readers:['ean_reader','upc_reader'] }
-    }, err => {
-      if (err) return onError(err);
-      Quagga.start();
-    });
-    Quagga.onDetected(result => onDetected(result.codeResult.code));
-    return () => Quagga.stop();
+    const startScanner = () => {
+      if (scannerRunning.current) return;
+      scannerRunning.current = true;
+      Quagga.init({
+        inputStream: {
+          type: 'LiveStream',
+          target: videoRef.current,
+          constraints: { facingMode: 'environment' }
+        },
+        decoder: { readers: ['ean_reader', 'upc_reader'] }
+      }, err => {
+        if (err) {
+          onError(err);
+          scannerRunning.current = false;
+          return;
+        }
+        Quagga.start();
+      });
+    };
+
+    const onDetectedHandler = result => onDetected(result.codeResult.code);
+    Quagga.onDetected(onDetectedHandler);
+
+    startScanner();
+
+    return () => {
+      Quagga.offDetected(onDetectedHandler);
+      if (scannerRunning.current) {
+        Quagga.stop();
+        scannerRunning.current = false;
+      }
+    };
   }, [onDetected, onError]);
 
   return <div ref={videoRef} className="scanner-stream"/>;

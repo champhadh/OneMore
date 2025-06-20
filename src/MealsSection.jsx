@@ -2,7 +2,7 @@
 import React from 'react';
 import './MealsSection.css';
 
-export default function MealsSection({ title, entries, onAdd }) {
+export default function MealsSection({ title, entries, onAdd, onEdit, onRemove }) {
   const total = entries.reduce((sum,e)=>sum+e.kcal,0);
   return (
     <section className="meals-section">
@@ -17,6 +17,8 @@ export default function MealsSection({ title, entries, onAdd }) {
               <strong>{e.name}</strong>
             </div>
             <span className="meal-kcal">{e.kcal}</span>
+            <button className="edit-btn" onClick={()=>onEdit(i)}>Edit</button>
+            <button className="delete-btn" onClick={()=>onRemove(i)}>Delete</button>
           </li>
         ))}
       </ul>

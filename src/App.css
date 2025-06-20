@@ -19,13 +19,13 @@
 }
 .app-header h1 {
   font-size: 2rem;
-  color: #E3DCD2;
+  color: var(--color-text-primary);
 }
 .settings-btn,
 .logout {
-  background: rgba(204, 139, 101, 0.9);
+  background: var(--color-bg-btn-primary);
   border: none;
-  color: #1A1A1A;
+  color: var(--color-text-btn-primary);
   padding: 0.5rem 1rem;
   margin-left: 0.5rem;
   border-radius: 0.5rem;
@@ -35,6 +35,7 @@
 .settings-btn:hover,
 .logout:hover {
   transform: translateY(-2px);
+  filter: brightness(1.1);
 }
 
 /* progress bars */
@@ -87,5 +88,56 @@ progress::-webkit-progress-value {
   margin-right: 0.5rem;
 }
 .error {
-  color: #cc5040;
+  color: var(--color-error);
+}
+
+/* Login Form specific styles */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--color-bg-main);
+}
+.login-container h1 {
+  color: var(--color-text-primary);
+  margin-bottom: 2rem;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 300px;
+}
+.login-form input {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-input);
+  color: var(--color-text-input);
+  font-size: 1rem;
+}
+.login-form button {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: var(--color-bg-btn-primary);
+  color: var(--color-text-btn-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.toggle-auth {
+  color: var(--color-text-primary);
+  margin-top: 1rem;
+}
+.link-button {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-size: 1rem;
 }

@@ -20,21 +20,34 @@
   margin-bottom: 0.75rem;
 }
 
+.health-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.health-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 0.75rem 0;
+}
+
 .health-info {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.health-info .label {
-  font-weight: bold;
+.health-info strong {
+  font-size: 1rem;
   color: #E3DCD2;
-  text-transform: uppercase;
 }
 
-.health-info .desc {
-  font-size: 0.9rem;
-  color: rgba(227, 220, 210, 0.8);
+.health-value {
+  font-size: 0.95rem;
+  color: #E3DCD2;
 }
 
 .health-actions {
@@ -43,26 +56,59 @@
   gap: 0.5rem;
 }
 
-.record-btn,
-.clear-btn {
+.add-btn, .edit-btn, .delete-btn {
   background: rgba(204, 139, 101, 0.9);
   border: none;
   color: #1A1A1A;
-  padding: 0.5rem;
-  border-radius: 50%;
-  font-size: 1rem;
+  padding: 0.4rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: background 0.2s;
 }
-
-.record-btn:hover,
-.clear-btn:hover {
+.add-btn:hover, .edit-btn:hover {
   background: rgba(204, 139, 101, 1);
 }
-
-.clear-btn {
+.delete-btn {
   background: rgba(100, 100, 100, 0.8);
+  color: #E3DCD2;
 }
-.clear-btn:hover {
+.delete-btn:hover {
   background: rgba(100, 100, 100, 1);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: #3B3836;
+  color: #E3DCD2;
+  padding: 2rem;
+  border-radius: 1rem;
+  min-width: 300px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal-input {
+  width: 100%;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: #e8e6e3;
+  color: #1A1A1A;
+  font-size: 1rem;
+}
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
 }

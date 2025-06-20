@@ -1,0 +1,54 @@
+/* src/theme.css */
+
+/* Define variables for both themes */
+:root {
+  --font-primary: 'Segoe UI', sans-serif;
+}
+
+/* Dark Theme (Default) */
+:root, :root.dark {
+  --color-bg-main: #2E2B29;
+  --color-bg-card: #232733;
+  --color-bg-modal: #3B3836;
+  --color-bg-input: #e8e6e3;
+  --color-bg-btn-primary: #ff9800;
+  --color-bg-btn-secondary: #333a4d;
+  --color-bg-btn-secondary-hover: #4a526b;
+
+  --color-text-primary: #E3DCD2;
+  --color-text-secondary: #ff9800;
+  --color-text-input: #1A1A1A;
+  --color-text-btn-primary: #232733;
+  --color-text-btn-secondary: #fff;
+  
+  --color-progress: #ff9800;
+  --color-progress-bg: #444;
+
+  --color-error: #ff5040;
+  --color-logout: #ff5040;
+  --color-border: rgba(255,255,255,0.1);
+}
+
+/* Light Theme */
+:root.light {
+  --color-bg-main: #FAF7F2;               /* Ivory Cream */
+  --color-bg-card: #ffffff;                 /* White for cards */
+  --color-bg-modal: #FAF7F2;
+  --color-bg-input: #ffffff;
+  --color-bg-btn-primary: #FF6B6B;       /* Peach Coral */
+  --color-bg-btn-secondary: #FFE3E3;     /* Soft Blush */
+  --color-bg-btn-secondary-hover: #fad7d7;
+
+  --color-text-primary: #2C2C2C;           /* Slate Charcoal */
+  --color-text-secondary: #FF6B6B;       /* Peach Coral */
+  --color-text-input: #2C2C2C;
+  --color-text-btn-primary: #FAF7F2;
+  --color-text-btn-secondary: #2C2C2C;
+
+  --color-progress: #B5C99A;              /* Muted Sage */
+  --color-progress-bg: #e0e0e0;
+
+  --color-error: #E07A5F;                 /* Burnt Sienna */
+  --color-logout: #E07A5F;
+  --color-border: rgba(44, 44, 44, 0.1);
+} 
